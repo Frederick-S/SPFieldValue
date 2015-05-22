@@ -1,6 +1,6 @@
-'use strict';
-
 (function (SP, window) {
+    'use strict';
+    
     var isString = function (obj) {
         return typeof obj === 'string';
     };
@@ -11,7 +11,7 @@
 
     var isBoolean = function (obj) {
         return typeof obj === 'boolean';
-    }
+    };
 
     var isArray = function (obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
@@ -75,7 +75,7 @@
         if (isSPFieldLookupValue(fieldValue)) {
             return fieldValue.get_lookupValue();
         }
-    }
+    };
 
     window.SPFieldValueAsText = SPFieldValueAsText;
 })(SP, window);
