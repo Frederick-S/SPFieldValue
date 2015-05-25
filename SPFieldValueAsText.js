@@ -1,6 +1,6 @@
 (function (SP, window) {
     'use strict';
-    
+
     var isString = function (obj) {
         return typeof obj === 'string';
     };
@@ -25,6 +25,22 @@
         return obj instanceof SP.FieldLookupValue;
     };
 
+    var isSPFieldUserValue = function (obj) {
+        return obj instanceof SP.FieldUserValue;
+    };
+
+    var isSPFieldUrlValue = function (obj) {
+        return obj instanceof SP.FieldUrlValue;
+    };
+
+    var isSPTaxonomyFieldValue = function (obj) {
+        return obj._ObjectType_ === 'SP.Taxonomy.TaxonomyFieldValue';
+    };
+
+    var isSPTaxonomyFieldValueCollection = function (obj) {
+        return obj._ObjectType_ === 'SP.Taxonomy.TaxonomyFieldValueCollection';
+    };
+
     var SPFieldValueAsText = function (listItem) {
         this.listItem = listItem;
     };
@@ -32,7 +48,7 @@
     SPFieldValueAsText.prototype.get = function (fieldName) {
         var fieldValue = this.listItem.get_item(fieldName);
 
-        // Field type: choice (display choices using checkboxes), lookup (allow multiple values)
+        // Field type: choice (display choices using checkboxes), lookup (allow multiple values), Person or group (allow multiple selections)
         if (isArray(fieldValue)) {
             var values = [];
 
@@ -74,6 +90,33 @@
         // Field type: lookup
         if (isSPFieldLookupValue(fieldValue)) {
             return fieldValue.get_lookupValue();
+        }
+
+        // Field type: person or group
+        if (isSPFieldUserValue(fieldValue)) {
+            return fieldValue.get_lookupValue();
+        }
+
+        // Field type: hyperlink or picture
+        if (isSPFieldUrlValue(fieldValue)) {
+            return fieldValue.get_url();
+        }
+
+        // Field type: managed metadata
+        if (isSPTaxonomyFieldValue(fieldValue)) {
+            return fieldValue.Label;
+        }
+
+        // Field type: managed metadata (allow multiple values)
+        if (isSPTaxonomyFieldValueCollection(fieldValue)) {
+            var values = [];
+            var childItems = fieldValue._Child_Items_;
+
+            for (var i = 0, length = childItems.length; i < length; i++) {
+                values.push(childItems[i].Label);
+            }
+
+            return values.join(', ');
         }
     };
 
