@@ -118,6 +118,8 @@
 
             return values.join(', ');
         }
+
+        return '';
     };
 
     window.SPFieldValueAsText = SPFieldValueAsText;
